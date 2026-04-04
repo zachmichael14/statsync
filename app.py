@@ -46,4 +46,15 @@ def auth():
 
 
     session["access_token"] = response.get("access_token")
-    session["refresh_token"] = response.get("refresh_token")n   
+    session["refresh_token"] = response.get("refresh_token")
+
+    if all(session["access_token"], session["refresh_token"]):
+        return "Auth successful, redirect impending"
+    
+    return f"Auth failed, how very sad."
+
+
+if __name__ == "__main__":
+    load_dotenv()
+    app.secret_key = os.getenv("APP_SECRET").encode("UTF-8")
+    app.run()
