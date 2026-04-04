@@ -44,19 +44,20 @@ def auth():
         data=request_body
     ).json()
 
-
     session["access_token"] = response.get("access_token")
     session["refresh_token"] = response.get("refresh_token")
 
     if all([session["access_token"], session["refresh_token"]]):
-        name = f"{response.get("firstname")}_{response.get("lastname")}"
-        return redirect(url_for("athlete_home"), athlete=name)
+        athlete = response.get("athlete", {})
+        name = f"{athlete.get("firstname")}_{athlete.get("lastname")}"
+        return redirect(url_for("athlete_home", athlete=name))
     
     return f"Auth failed, how very sad."
 
-@app.route("/home/{athlete}")
-def athlete_home():
-    return "foo"
+@app.route("/home/<athlete>")
+def athlete_home(athlete):
+    athlete_names = athlete.split("_")
+    return f"Hello there, General {athlete_names[1]}"
 
 
 
