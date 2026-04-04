@@ -57,7 +57,7 @@ python3 -m venv .venv
 #### c. Install Dependencies
 Install dependencies in the activated virtual environment.
 ```bash
-source venv/bin/activate
+source .venv/bin/activate
 
 pip install -r requirements.txt
 ```
