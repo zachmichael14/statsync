@@ -48,10 +48,19 @@ def auth():
     session["access_token"] = response.get("access_token")
     session["refresh_token"] = response.get("refresh_token")
 
-    if all(session["access_token"], session["refresh_token"]):
-        return "Auth successful, redirect impending"
+    if all([session["access_token"], session["refresh_token"]]):
+        name = f"{response.get("firstname")}_{response.get("lastname")}"
+        return redirect(url_for("athlete_home"), athlete=name)
     
     return f"Auth failed, how very sad."
+
+@app.route("/home/{athlete}")
+def athlete_home():
+    return "foo"
+
+
+
+
 
 
 if __name__ == "__main__":
