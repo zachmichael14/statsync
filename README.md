@@ -85,18 +85,22 @@ echo CLIENT_SECRET=<YOUR_CLIENT_SECRET> >> .env
 
 ## TODO (no particular order)
 
-- [DONE] Auth
-- Create home/dash/profile page
-  - This will also entail coming up with stats to include/calculate. It may make sense for this to be broken up into tabs/sections, but a single dashboard will suffice as an MVP.
-- Redirect to home after auth
-  - Currently, the user is left on auth page, redirect to a dashboard or profile page or something
+- [DONE] ~~Auth~~
+- [DONE] ~~Create home/dash/profile page~~
+- Links to pull in data from all time/date range
+    - To avoid pulling data that was fetched previously, storing a last_updated_date somewhere and only querying for activities after that date could work.
+- Populate athlete profile page with data
+  - This will also entail coming up with stats to include/calculate. It may make sense for this to be broken up into tabs/sections, but a single dashboard will suffice as an  
+    MVP.
+- [DONE] ~~Redirect to home after auth~~
+  - ~~Currently, the user is left on auth page, redirect to a dashboard or profile page or something~~
 - Cache/store data
   - Possibly two methods: CSV and SQLite.
   - SQLite is lightweight enough to store locally and makes for nice filtering.
   - CSV is convenient and easy to process.
   - Both make data available offline and help prevent unnecessary API requests.
   - Caching could be useful but may not be necessary
-
+- 
 ---
 
 ## Future Directions
