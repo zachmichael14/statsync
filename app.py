@@ -1,10 +1,18 @@
+import csv
+import io
 import os
 
+
+import pandas as pd
 from urllib.parse import urlencode
 
 from dotenv import load_dotenv
-from flask import Flask, redirect, request, session, url_for
+from flask import Flask, Response, redirect, request, session, url_for
 import requests
+
+BASE_URL="https://www.strava.com/api/v3"
+AUTH_URL="https://www.strava.com/oauth/authorize?"
+TOKEN_URL="https://www.strava.com/oauth/token"
 
 app = Flask(__name__)
 
@@ -17,7 +25,7 @@ def index():
         "response_type": "code",
         "scope": "activity:read_all,profile:read_all"
     }
-    auth_url = "https://www.strava.com/oauth/authorize?" + urlencode(params)
+    auth_url = AUTH_URL + urlencode(params)
     return f'''
         <html>
             <body>
@@ -40,7 +48,7 @@ def auth():
     }
 
     response = requests.post(
-        "https://www.strava.com/oauth/token",
+        TOKEN_URL,
         data=request_body
     ).json()
 
@@ -49,17 +57,64 @@ def auth():
 
     if all([session["access_token"], session["refresh_token"]]):
         athlete = response.get("athlete", {})
+        session["athlete_id"] = athlete.get("id")
         name = f"{athlete.get("firstname")}_{athlete.get("lastname")}"
-        return redirect(url_for("athlete_home", athlete=name))
+        return redirect(url_for("athlete_home", athlete_name=name))
     
     return f"Auth failed, how very sad."
 
-@app.route("/home/<athlete>")
-def athlete_home(athlete):
-    athlete_names = athlete.split("_")
-    return f"Hello there, General {athlete_names[1]}"
+@app.route("/home/<athlete_name>")
+def athlete_home(athlete_name):
+    athlete_names = athlete_name.split("_")
+
+    header = {
+        "Authorization": f"Bearer {session['access_token']}"
+    }
+
+    params = {
+        "per_page": 500
+    }
+    list_activity_url = f"{BASE_URL}/athlete/activities" + urlencode(params)
 
 
+    return f'''
+        <html>
+            <body>
+                <a href="/activities">
+                    <button>Get all of {athlete_names[0]}'s activities</button>
+                </a>
+            </body>
+        </html>
+    '''
+
+@app.route("/activities")
+def activities():
+
+    header = {
+        "Authorization": f"Bearer {session['access_token']}"
+    }
+
+    params = {
+        "page": 1,
+        "per_page": 100,
+    }
+    list_activity_url = f"{BASE_URL}/athlete/activities"
+
+
+    response = requests.get(
+        list_activity_url,
+        params=params,
+        headers=header
+    ).json()
+    
+   
+    df = pd.DataFrame(response)
+
+    return Response(
+        df.to_csv(index=False),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=activities.csv"}
+    )
 
 
 
