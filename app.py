@@ -7,7 +7,7 @@ import pandas as pd
 from urllib.parse import urlencode
 
 from dotenv import load_dotenv
-from flask import Flask, Response, redirect, request, session, url_for
+from flask import Flask, Response, redirect, render_template, request, session, url_for
 import requests
 
 BASE_URL="https://www.strava.com/api/v3"
@@ -26,16 +26,8 @@ def index():
         "scope": "activity:read_all,profile:read_all"
     }
     auth_url = AUTH_URL + urlencode(params)
-    return f'''
-        <html>
-            <body>
-                <a href="{auth_url}">
-                    <button>Login with Strava</button>
-                </a>
-            </body>
-        </html>
-    '''
-
+    return render_template("index.html", auth_url=auth_url)
+   
 @app.route("/auth")
 def auth():
     auth_code = request.args.get("code")
@@ -95,7 +87,7 @@ def activities():
     }
 
     params = {
-        "page": 1,
+        "page": 3,
         "per_page": 100,
     }
     list_activity_url = f"{BASE_URL}/athlete/activities"
