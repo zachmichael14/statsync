@@ -58,26 +58,7 @@ def auth():
 @app.route("/home/<athlete_name>")
 def athlete_home(athlete_name):
     athlete_names = athlete_name.split("_")
-
-    header = {
-        "Authorization": f"Bearer {session['access_token']}"
-    }
-
-    params = {
-        "per_page": 500
-    }
-    list_activity_url = f"{BASE_URL}/athlete/activities" + urlencode(params)
-
-
-    return f'''
-        <html>
-            <body>
-                <a href="/activities">
-                    <button>Get all of {athlete_names[0]}'s activities</button>
-                </a>
-            </body>
-        </html>
-    '''
+    return render_template("athlete.html", athlete_name=athlete_names[0])
 
 @app.route("/activities")
 def activities():
